@@ -1,3 +1,3 @@
 # tunnel-server
 
-manages tunneled connections to the hospital PACS systems
+manages tunneled connections to multiple private networks using websockets
