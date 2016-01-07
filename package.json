@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint *.js .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "babel": "^5.8.21",
+    "body-parser": "^1.13.3",
+    "compression": "^1.5.2",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "node-reverse-wstunnel": "^0.1.2",
+    "resource-router-middleware": "^0.5.1",
+    "websocket-monkeypatch": "^0.1.2",
+    "ws": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^5.0.0-beta6",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^3.0.1"
+  }
+}
