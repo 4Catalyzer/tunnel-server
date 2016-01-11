@@ -27,7 +27,7 @@ export function open(serverPort, minRange, maxRange, authenticate) {
       };
     }
   };
-  server.start(serverPort, () => {
+  server.start(`0.0.0.0:${serverPort}`, () => {
     log(`Tunnel server started on port ${serverPort}`);
   });
 }
