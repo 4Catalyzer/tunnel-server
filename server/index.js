@@ -13,10 +13,10 @@ import middleware from './middleware';
 
 wsmp(WebSocket);
 
-const serverPort = process.env.TS_SERVER_PORT || 8080;
-const tunnelPort = process.env.TS_TUNNEL_PORT || 8081;
-const minPortRange = process.env.TS_MIN_PORT_RANGE || 10000;
-const maxPortRange = process.env.TS_MAX_PORT_RANGE || 20000;
+const serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
+const tunnelPort = Number(process.env.TS_TUNNEL_PORT) || 8081;
+const minPortRange = Number(process.env.TS_MIN_PORT_RANGE) || 10000;
+const maxPortRange = Number(process.env.TS_MAX_PORT_RANGE) || 20000;
 const wsToken = process.env.TS_AUTH_TOKEN;
 
 assert(wsToken);
