@@ -1,7 +1,7 @@
 /* eslint new-cap: 0 */
 import assert from 'assert';
 import net from 'net';
-import wts from 'node-reverse-wstunnel';
+import { reverseServer } from 'reverse-wstunnel';
 
 let _serverPort;
 let _maxRange;
@@ -16,8 +16,7 @@ export function open(serverPort, minRange, maxRange) {
   _maxRange = maxRange;
   _minRange = minRange;
 
-  const reverseServer = new wts.server_reverse();
-  reverseServer.start(serverPort);
+  new reverseServer().start(serverPort);
 }
 
 /**
