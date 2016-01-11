@@ -46,7 +46,10 @@ export default class Network {
         const tunnelLocation = `${tunnelServerHost}:${tunnelPort}`;
         this._tunnels[netloc] = tunnelLocation;
         log(`new tunnel for ${netloc} opened at ${tunnelLocation}`);
-        cb(tunnelLocation);
+        cb({
+          hostname: tunnelServerHost,
+          port: tunnelServerPort,
+        });
       });
     });
   }
