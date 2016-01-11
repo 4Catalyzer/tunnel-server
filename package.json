@@ -10,6 +10,7 @@
     "compression": "^1.5.2",
     "cors": "^2.7.1",
     "express": "^4.13.3",
+    "morgan": "^1.6.1",
     "resource-router-middleware": "^0.5.1",
     "reverse-wstunnel": "^1.2.1",
     "websocket-monkeypatch": "^0.1.2",

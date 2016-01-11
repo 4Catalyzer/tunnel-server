@@ -2,6 +2,7 @@ import assert from 'assert';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import morgan from 'morgan';
 import wsmp from 'websocket-monkeypatch';
 import WebSocket from 'ws';
 
@@ -34,6 +35,8 @@ app.use(cors({
 app.use(bodyParser.json({
   limit: '100kb',
 }));
+
+app.use(morgan('combined'));
 
 // internal middleware
 app.use(middleware());
