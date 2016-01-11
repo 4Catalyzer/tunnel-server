@@ -12,6 +12,9 @@ export default function () {
     assert(netloc);
 
     const network = getNetwork(req.networkId);
+    if (!network) {
+      return res.status(404).send('network not found');
+    }
 
 
     const tunnelServerHost = req.header('host').replace(/:.*$/, '');

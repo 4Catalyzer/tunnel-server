@@ -1,5 +1,3 @@
-import assert from 'assert';
-
 import Network from './network';
 import { log, warn } from './log';
 
@@ -11,9 +9,7 @@ const networkRegistry = {};
  * @return {[type]} [description]
  */
 export function getNetwork(networkId) {
-  const network = networkRegistry[networkId];
-  assert(network, `Network ${networkId} not registered`);
-  return network;
+  return networkRegistry[networkId];
 }
 
 export function unregisterNetwork(networkId) {
