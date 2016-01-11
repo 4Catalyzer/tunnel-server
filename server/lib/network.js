@@ -43,13 +43,14 @@ export default class Network {
       this._ws.sendCommand('OPEN_TUNNEL', data, (error) => {
         assert(!error);
 
-        const tunnelLocation = `${tunnelServerHost}:${tunnelPort}`;
-        this._tunnels[netloc] = tunnelLocation;
-        log(`new tunnel for ${netloc} opened at ${tunnelLocation}`);
-        cb({
+        const tunnelLocation = {
           hostname: tunnelServerHost,
-          port: tunnelServerPort,
-        });
+          port: tunnelPort,
+        };
+        this._tunnels[netloc] = tunnelLocation;
+        log(`new tunnel for ${netloc} opened at ` +
+          ` ${tunnelServerHost}:${tunnelPort}`);
+        cb(tunnelLocation);
       });
     });
   }
