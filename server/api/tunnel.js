@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { Router } from 'express';
 
 import { getNetwork } from '../lib/network-registry';
@@ -9,7 +8,9 @@ export default function () {
 
   api.put('/', (req, res) => {
     const { hostname, port } = req.body;
-    assert(hostname, port);
+    if (!hostname || !port) {
+      return res.status(400).send('invalid hostname or port');
+    }
 
     const network = getNetwork(req.networkId);
     if (!network) {
