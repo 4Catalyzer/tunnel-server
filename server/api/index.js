@@ -1,10 +1,17 @@
 import { Router } from 'express';
 import tunnel from './tunnel';
 
-export default function () {
+export default function (authenticate) {
   const api = new Router();
 
   api.use('/networks/:networkId/tunnel',
+    (req, res, next) => {
+      if (authenticate(req.headers)) {
+        next();
+      } else {
+        res.status(401).send('invalid token');
+      }
+    },
     (req, res, next) => {
       req.networkId = req.params.networkId;
       next();

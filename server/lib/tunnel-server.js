@@ -10,13 +10,22 @@ let _minRange;
 /**
  * open a reverse tunnel server at the specified port
  */
-export function open(serverPort, minRange, maxRange) {
+export function open(serverPort, minRange, maxRange, authenticate) {
   assert(serverPort && minRange && maxRange);
   _serverPort = serverPort;
   _maxRange = maxRange;
   _minRange = minRange;
 
-  new reverseServer().start(serverPort);
+  const server = new reverseServer();
+  server.authenticate = req => {
+    if (!authenticate(req)) {
+      return {
+        httpStatus: 401,
+        reason: 'invalid token',
+      };
+    }
+  };
+  server.start(serverPort);
 }
 
 /**
