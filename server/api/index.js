@@ -11,5 +11,11 @@ export default function () {
     },
     tunnel());
 
+  api.get('/_tunnel',
+    (req, res) => res.json({
+      api_version: '1.0',
+    })
+  );
+
   return api;
 }
