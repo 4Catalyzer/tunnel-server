@@ -3,6 +3,8 @@ import assert from 'assert';
 import net from 'net';
 import { reverseServer } from 'reverse-wstunnel';
 
+import { log } from './log';
+
 let _serverPort;
 let _maxRange;
 let _minRange;
@@ -25,7 +27,9 @@ export function open(serverPort, minRange, maxRange, authenticate) {
       };
     }
   };
-  server.start(serverPort);
+  server.start(serverPort, () => {
+    log(`Tunnel server started on port ${serverPort}`);
+  });
 }
 
 /**
@@ -40,7 +44,10 @@ export function getServerPort() {
  */
 export function getAvailablePort(cb, retries) {
   retries = retries || 40;
+
+  log(`finding an open port between ${_minRange} and ${_maxRange}`);
   const port = Math.floor(Math.random() * (_maxRange - _minRange) + _minRange);
+  log(`testing if ${port} is open`);
 
   const tester = net.createServer();
 
