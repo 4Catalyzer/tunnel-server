@@ -7,9 +7,10 @@ import { log } from './log';
  */
 export default class Network {
 
-  constructor(ws) {
+  constructor(ws, serverHost) {
     this._ws = ws;
     this._tunnels = {};
+    this._serverHost = serverHost;
   }
 
   /**
@@ -25,7 +26,7 @@ export default class Network {
    * opens a new tunnel. If the tunnel is already open, it doesn't do anything.
    * The first argument fo the callback will be the tunnel location
    */
-  openTunnel(tunnelServerHost, tunnelServerPort, netloc, cb) {
+  openTunnel(tunnelServerPort, netloc, cb) {
     if (this._tunnels[netloc]) {
       return cb(this._tunnels[netloc]);
     }
@@ -36,21 +37,17 @@ export default class Network {
 
       const data = {
         tunnelPort,
-        tunnelServerUrl: `ws://${tunnelServerHost}:${tunnelServerPort}`,
+        // TODO websocket connection should be secure
+        tunnelServerUrl: `ws://${this._serverHost}:${tunnelServerPort}`,
         netloc,
       };
 
       this._ws.sendCommand('OPEN_TUNNEL', data, (error) => {
         assert(!error);
 
-        const tunnelLocation = {
-          hostname: tunnelServerHost,
-          port: tunnelPort,
-        };
-        this._tunnels[netloc] = tunnelLocation;
-        log(`new tunnel for ${netloc} opened at ` +
-          ` ${tunnelServerHost}:${tunnelPort}`);
-        cb(tunnelLocation);
+        this._tunnels[netloc] = tunnelPort;
+        log(`new tunnel for ${netloc} opened on port ${tunnelPort}`);
+        cb(tunnelPort);
       });
     });
   }
