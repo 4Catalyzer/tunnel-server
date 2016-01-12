@@ -22,6 +22,7 @@ export function unregisterNetwork(networkId) {
  * socket handler for express
  */
 export function websocket(ws) {
+  const serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
   ws.on('message', data => {
     log(`received ${data}`);
   });
@@ -35,7 +36,7 @@ export function websocket(ws) {
       return;
     }
 
-    networkRegistry[networkId] = new Network(ws);
+    networkRegistry[networkId] = new Network(ws, serverHost);
     log(`network Registered "${networkId}"`);
 
     ws.monitor(5000, () => unregisterNetwork(networkId));

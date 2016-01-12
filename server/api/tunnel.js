@@ -21,8 +21,8 @@ export default function () {
     const tunnelServerHost = req.header('host').replace(/:.*$/, '');
     const tunnelServerPort = getServerPort();
 
-    network.openTunnel(tunnelServerHost, tunnelServerPort,
-      `${hostname}:${port}`, s => res.send(s));
+    network.openTunnel(tunnelServerPort, `${hostname}:${port}`,
+      tunnelPort => res.send({ port: tunnelPort, hostname: tunnelServerHost }));
   });
 
   return api;
