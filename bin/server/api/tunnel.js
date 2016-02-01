@@ -8,8 +8,6 @@ var _express = require('express');
 
 var _libNetworkRegistry = require('../lib/network-registry');
 
-var _libTunnelServer = require('../lib/tunnel-server');
-
 exports['default'] = function () {
   var api = new _express.Router();
 
@@ -28,9 +26,8 @@ exports['default'] = function () {
     }
 
     var tunnelServerHost = req.header('host').replace(/:.*$/, '');
-    var tunnelServerPort = (0, _libTunnelServer.getServerPort)();
 
-    network.openTunnel(tunnelServerPort, hostname + ':' + port, function (tunnelPort) {
+    network.openTunnel(hostname + ':' + port, function (tunnelPort) {
       return res.send({ port: tunnelPort, hostname: tunnelServerHost });
     });
   });

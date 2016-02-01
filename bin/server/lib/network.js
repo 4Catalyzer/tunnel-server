@@ -23,12 +23,12 @@ var _log = require('./log');
  */
 
 var Network = (function () {
-  function Network(ws, serverHost) {
+  function Network(ws, serverUrl) {
     _classCallCheck(this, Network);
 
     this._ws = ws;
     this._tunnels = {};
-    this._serverHost = serverHost;
+    this._serverUrl = serverUrl;
   }
 
   /**
@@ -49,7 +49,7 @@ var Network = (function () {
      */
   }, {
     key: 'openTunnel',
-    value: function openTunnel(tunnelServerPort, netloc, cb) {
+    value: function openTunnel(netloc, cb) {
       var _this = this;
 
       if (this._tunnels[netloc]) {
@@ -62,8 +62,7 @@ var Network = (function () {
 
         var data = {
           tunnelPort: tunnelPort,
-          // TODO websocket connection should be secure
-          tunnelServerUrl: 'ws://' + _this._serverHost + ':' + tunnelServerPort,
+          tunnelServerUrl: _this._serverUrl,
           netloc: netloc
         };
 

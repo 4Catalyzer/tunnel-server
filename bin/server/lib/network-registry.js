@@ -15,6 +15,8 @@ var _network2 = _interopRequireDefault(_network);
 
 var _log = require('./log');
 
+var _libTunnelServer = require('../lib/tunnel-server');
+
 var networkRegistry = {};
 
 /**
@@ -36,8 +38,7 @@ function unregisterNetwork(networkId) {
  * socket handler for express
  */
 
-function websocket(ws) {
-  var serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
+function websocket(ws, path, protocol) {
   ws.on('message', function (data) {
     (0, _log.log)('received ' + data);
   });
@@ -51,7 +52,9 @@ function websocket(ws) {
       return;
     }
 
-    networkRegistry[networkId] = new _network2['default'](ws, serverHost);
+    var serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
+    var serverUrl = protocol + '://' + serverHost + ':' + _libTunnelServer.getServerPort + path;
+    networkRegistry[networkId] = new _network2['default'](ws, serverUrl);
     (0, _log.log)('network Registered "' + networkId + '"');
 
     ws.monitor(5000, function () {
