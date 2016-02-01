@@ -6,6 +6,9 @@
     "lint": "eslint *.js .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "tunnel-server": "index.js"
+  },
   "dependencies": {
     "babel": "^5.8.21",
     "body-parser": "^1.13.3",
