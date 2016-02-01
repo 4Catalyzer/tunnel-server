@@ -1,5 +1,6 @@
 import Network from './network';
 import { log, warn } from './log';
+import { getServerPort } from '../lib/tunnel-server';
 
 
 const networkRegistry = {};
@@ -21,8 +22,7 @@ export function unregisterNetwork(networkId) {
 /**
  * socket handler for express
  */
-export function websocket(ws) {
-  const serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
+export function websocket(ws, path, protocol) {
   ws.on('message', data => {
     log(`received ${data}`);
   });
@@ -36,7 +36,9 @@ export function websocket(ws) {
       return;
     }
 
-    networkRegistry[networkId] = new Network(ws, serverHost);
+    const serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
+    const serverUrl = `${protocol}://${serverHost}:${getServerPort}${path}`;
+    networkRegistry[networkId] = new Network(ws, serverUrl);
     log(`network Registered "${networkId}"`);
 
     ws.monitor(5000, () => unregisterNetwork(networkId));
