@@ -2,12 +2,15 @@
   "name": "tunnel-server",
   "version": "0.1.2",
   "scripts": {
-    "start": "node index.js",
-    "lint": "eslint *.js .",
+    "clean": "rm -rf bin/server",
+    "start-dev": "node index.js",
+    "lint": "eslint *.js server/",
+    "compile": "babel server --out-dir bin/server",
+    "build": "npm run lint && npm run clean && npm run compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "tunnel-server": "index.js"
+    "tunnel-server": "bin/index.js"
   },
   "dependencies": {
     "babel": "^5.8.21",
