@@ -19,10 +19,25 @@ export function unregisterNetwork(networkId) {
   networkRegistry[networkId] = undefined;
 }
 
+function createServerUrl(request, path, protocol, useReqHeaders) {
+  let serverPort = getServerPort();
+  const [reqHost, reqPort] = request.headers.host.split(':');
+  if (useReqHeaders) {
+    if ((request.headers['X-Forwarded-Proto'] || request.protocol) === 'http') {
+      protocol = 'ws';
+    } else {
+      protocol = 'wss';
+    }
+    serverPort = Number(reqPort);
+  }
+  const serverUrl = `${protocol}://${reqHost}:${serverPort}${path}`;
+  return serverUrl;
+}
+
 /**
  * socket handler for express
  */
-export function websocket(ws, path, protocol) {
+export function websocket(ws, path, protocol, useReqHeaders) {
   ws.on('message', data => {
     log(`received ${data}`);
   });
@@ -36,9 +51,9 @@ export function websocket(ws, path, protocol) {
       return;
     }
 
-    const serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
-    const serverPort = getServerPort();
-    const serverUrl = `${protocol}://${serverHost}:${serverPort}${path}`;
+    const serverUrl = createServerUrl(ws.upgradeReq, path, protocol,
+      useReqHeaders);
+
     networkRegistry[networkId] = new Network(ws, serverUrl);
     log(`network Registered "${networkId}"`);
 
