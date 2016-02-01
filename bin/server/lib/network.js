@@ -10,25 +10,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _assert = require('assert');
-
-var _assert2 = _interopRequireDefault(_assert);
-
-var _tunnelServer = require('./tunnel-server');
-
 var _log = require('./log');
+
+var _reverseServer = require('./reverse-server');
+
+var _reverseServer2 = _interopRequireDefault(_reverseServer);
 
 /**
  * Handles all the open connections to a specific netwrork
  */
 
 var Network = (function () {
-  function Network(ws, serverUrl) {
+  function Network(ws) {
     _classCallCheck(this, Network);
 
     this._ws = ws;
     this._tunnels = {};
-    this._serverUrl = serverUrl;
   }
 
   /**
@@ -39,8 +36,38 @@ var Network = (function () {
     key: 'unregister',
     value: function unregister() {
       this._ws.terminate();
-      // TODO terminate tunnels
+      // terminate all the open tunnels
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = Object.keys(this._tunnels)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var k = _step.value;
+
+          this._tunnels[k].close();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
       this._tunnels = {};
+    }
+  }, {
+    key: 'getTunnelPort',
+    value: function getTunnelPort(netloc) {
+      return this._tunnels[netloc].address().port;
     }
 
     /**
@@ -53,26 +80,17 @@ var Network = (function () {
       var _this = this;
 
       if (this._tunnels[netloc]) {
-        return cb(this._tunnels[netloc]);
+        var tunnelPort = this.getTunnelPort(netloc);
+        return cb(tunnelPort);
       }
 
       (0, _log.log)('opening new tunnel', netloc);
-      (0, _tunnelServer.getAvailablePort)(function (err, tunnelPort) {
-        (0, _assert2['default'])(!err);
 
-        var data = {
-          tunnelPort: tunnelPort,
-          tunnelServerUrl: _this._serverUrl,
-          netloc: netloc
-        };
-
-        _this._ws.sendCommand('OPEN_TUNNEL', data, function (error) {
-          (0, _assert2['default'])(!error);
-
-          _this._tunnels[netloc] = tunnelPort;
-          (0, _log.log)('new tunnel for ' + netloc + ' opened on port ' + tunnelPort);
-          cb(tunnelPort);
-        });
+      (0, _reverseServer2['default'])(this._ws, netloc, function (tcpServer) {
+        _this._tunnels[netloc] = tcpServer;
+        var tunnelPort = _this.getTunnelPort(netloc);
+        (0, _log.log)('new tunnel for ' + netloc + ' opened on port ' + tunnelPort);
+        return cb(tunnelPort);
       });
     }
   }]);

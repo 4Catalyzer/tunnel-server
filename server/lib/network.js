@@ -1,16 +1,14 @@
-import assert from 'assert';
-import { getAvailablePort } from './tunnel-server';
 import { log } from './log';
+import reverseServer from './reverse-server';
 
 /**
  * Handles all the open connections to a specific netwrork
  */
 export default class Network {
 
-  constructor(ws, serverUrl) {
+  constructor(ws) {
     this._ws = ws;
     this._tunnels = {};
-    this._serverUrl = serverUrl;
   }
 
   /**
@@ -18,8 +16,15 @@ export default class Network {
    */
   unregister() {
     this._ws.terminate();
-    // TODO terminate tunnels
+    // terminate all the open tunnels
+    for (const k of Object.keys(this._tunnels)) {
+      this._tunnels[k].close();
+    }
     this._tunnels = {};
+  }
+
+  getTunnelPort(netloc) {
+    return this._tunnels[netloc].address().port;
   }
 
   /**
@@ -28,26 +33,17 @@ export default class Network {
    */
   openTunnel(netloc, cb) {
     if (this._tunnels[netloc]) {
-      return cb(this._tunnels[netloc]);
+      const tunnelPort = this.getTunnelPort(netloc);
+      return cb(tunnelPort);
     }
 
     log('opening new tunnel', netloc);
-    getAvailablePort((err, tunnelPort) => {
-      assert(!err);
 
-      const data = {
-        tunnelPort,
-        tunnelServerUrl: this._serverUrl,
-        netloc,
-      };
-
-      this._ws.sendCommand('OPEN_TUNNEL', data, (error) => {
-        assert(!error);
-
-        this._tunnels[netloc] = tunnelPort;
-        log(`new tunnel for ${netloc} opened on port ${tunnelPort}`);
-        cb(tunnelPort);
-      });
+    reverseServer(this._ws, netloc, (tcpServer) => {
+      this._tunnels[netloc] = tcpServer;
+      const tunnelPort = this.getTunnelPort(netloc);
+      log(`new tunnel for ${netloc} opened on port ${tunnelPort}`);
+      return cb(tunnelPort);
     });
   }
 
