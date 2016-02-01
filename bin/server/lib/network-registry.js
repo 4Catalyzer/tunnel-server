@@ -53,7 +53,8 @@ function websocket(ws, path, protocol) {
     }
 
     var serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
-    var serverUrl = protocol + '://' + serverHost + ':' + _libTunnelServer.getServerPort + path;
+    var serverPort = (0, _libTunnelServer.getServerPort)();
+    var serverUrl = protocol + '://' + serverHost + ':' + serverPort + path;
     networkRegistry[networkId] = new _network2['default'](ws, serverUrl);
     (0, _log.log)('network Registered "' + networkId + '"');
 

@@ -37,7 +37,8 @@ export function websocket(ws, path, protocol) {
     }
 
     const serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
-    const serverUrl = `${protocol}://${serverHost}:${getServerPort}${path}`;
+    const serverPort = getServerPort();
+    const serverUrl = `${protocol}://${serverHost}:${serverPort}${path}`;
     networkRegistry[networkId] = new Network(ws, serverUrl);
     log(`network Registered "${networkId}"`);
 
