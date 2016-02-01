@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { getNetwork } from '../lib/network-registry';
-import { getServerPort } from '../lib/tunnel-server';
 
 export default function () {
   const api = new Router();
@@ -17,11 +16,9 @@ export default function () {
       return res.status(404).send('network not found');
     }
 
-
     const tunnelServerHost = req.header('host').replace(/:.*$/, '');
-    const tunnelServerPort = getServerPort();
 
-    network.openTunnel(tunnelServerPort, `${hostname}:${port}`,
+    network.openTunnel(`${hostname}:${port}`,
       tunnelPort => res.send({ port: tunnelPort, hostname: tunnelServerHost }));
   });
 

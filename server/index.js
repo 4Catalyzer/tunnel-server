@@ -19,8 +19,11 @@ const tunnelPort = Number(process.env.TS_TUNNEL_PORT) || 8081;
 const minPortRange = Number(process.env.TS_MIN_PORT_RANGE) || 10000;
 const maxPortRange = Number(process.env.TS_MAX_PORT_RANGE) || 20000;
 const wsToken = process.env.TS_AUTH_TOKEN;
+const cncWebsocketPath = process.env.TS_CNC_WS_PATH || '/ws';
+const tunnelWebsocketProtocol = process.env.TS_TUNNEL_WS_PROTOCOL || 'ws';
+const tunnelWebsocketPath = process.env.TS_TUNNEL_WS_PATH || '';
 
-assert(wsToken);
+assert(wsToken, 'specify a websocket token');
 
 function authenticate(headers) {
   return headers.authorization === wsToken;
@@ -46,16 +49,21 @@ app.use('/api', api(authenticate));
 
 const server = app.listen(serverPort);
 
-const wss = new WebSocket.Server({ server, path: '/ws' });
+const wss = new WebSocket.Server({ server, path: cncWebsocketPath });
 wss.on('connection', ws => {
   if (!authenticate(ws.upgradeReq.headers)) {
     ws.close(1008, 'authentication failed');
   } else {
-    websocket(ws);
+    websocket(ws, tunnelWebsocketPath, tunnelWebsocketProtocol);
   }
 });
 
 log(`Server started on port ${server.address().port}`);
+
+log(`TS_CNC_WS_PATH: ${cncWebsocketPath}`);
+log(`TS_TUNNEL_WS_PROTOCOL: ${tunnelWebsocketProtocol}`);
+log(`TS_TUNNEL_WS_PATH: ${tunnelWebsocketPath}`);
+
 
 tunnelServer.open(tunnelPort, minPortRange, maxPortRange,
   req => authenticate(req.headers));
