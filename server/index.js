@@ -11,6 +11,8 @@ import middleware from './middleware';
 
 const serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
 const wsToken = process.env.TS_AUTH_TOKEN;
+const authenticateApi =
+  (process.env.TS_AUTHENTICATE_API || '').toLowerCase() === 'true';
 
 assert(wsToken, 'specify a websocket token');
 
@@ -34,7 +36,7 @@ app.use(morgan('combined'));
 app.use(middleware());
 
 // api router
-app.use('/api', api(authenticate));
+app.use('/api', api(authenticateApi && authenticate));
 
 const server = app.listen(serverPort);
 

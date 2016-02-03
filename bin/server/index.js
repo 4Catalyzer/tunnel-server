@@ -42,6 +42,7 @@ var _middleware2 = _interopRequireDefault(_middleware);
 
 var serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
 var wsToken = process.env.TS_AUTH_TOKEN;
+var authenticateApi = (process.env.TS_AUTHENTICATE_API || '').toLowerCase() === 'true';
 
 (0, _assert2['default'])(wsToken, 'specify a websocket token');
 
@@ -65,7 +66,7 @@ app.use((0, _morgan2['default'])('combined'));
 app.use((0, _middleware2['default'])());
 
 // api router
-app.use('/api', (0, _api2['default'])(authenticate));
+app.use('/api', (0, _api2['default'])(authenticateApi && authenticate));
 
 var server = app.listen(serverPort);
 
