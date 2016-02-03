@@ -16,7 +16,7 @@ exports['default'] = function (authenticate) {
   var api = new _express.Router();
 
   api.use('/networks/:networkId/tunnel', function (req, res, next) {
-    if (authenticate(req.headers)) {
+    if (!authenticate || authenticate(req.headers)) {
       next();
     } else {
       res.status(401).send('invalid token');
