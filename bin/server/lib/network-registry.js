@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', {
 });
 exports.getNetwork = getNetwork;
 exports.unregisterNetwork = unregisterNetwork;
-exports.websocket = websocket;
+exports.registerNetwork = registerNetwork;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -15,9 +15,8 @@ var _network2 = _interopRequireDefault(_network);
 
 var _log = require('./log');
 
-var _libTunnelServer = require('../lib/tunnel-server');
-
 var networkRegistry = {};
+var MONITOR_TIMEOUT = 5000;
 
 /**
  * get the network specified by `networkId`
@@ -38,30 +37,19 @@ function unregisterNetwork(networkId) {
  * socket handler for express
  */
 
-function websocket(ws, path, protocol) {
-  ws.on('message', function (data) {
-    (0, _log.log)('received ' + data);
+function registerNetwork(ws, networkId) {
+  (0, _log.log)('Registering network "' + networkId + '"');
+
+  if (networkRegistry[networkId]) {
+    (0, _log.warn)('Network ' + networkId + ' was already registered');
+    ws.terminate();
+    return;
+  }
+
+  networkRegistry[networkId] = new _network2['default'](ws);
+  (0, _log.log)('network Registered "' + networkId + '"');
+
+  ws.monitor(MONITOR_TIMEOUT, function () {
+    return unregisterNetwork(networkId);
   });
-
-  ws.onCommand('REGISTER_NETWORK', function (networkId) {
-    (0, _log.log)('Registering network "' + networkId + '"');
-
-    if (networkRegistry[networkId]) {
-      (0, _log.warn)('Network ' + networkId + ' was already registered');
-      ws.terminate();
-      return;
-    }
-
-    var serverHost = ws.upgradeReq.headers.host.replace(/:.*$/, '');
-    var serverPort = (0, _libTunnelServer.getServerPort)();
-    var serverUrl = protocol + '://' + serverHost + ':' + serverPort + path;
-    networkRegistry[networkId] = new _network2['default'](ws, serverUrl);
-    (0, _log.log)('network Registered "' + networkId + '"');
-
-    ws.monitor(5000, function () {
-      return unregisterNetwork(networkId);
-    });
-  });
-
-  (0, _log.log)('New socket connection opened');
 }
