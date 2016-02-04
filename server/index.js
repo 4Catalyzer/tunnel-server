@@ -31,7 +31,7 @@ app.use(bodyParser.json({
   limit: '100kb',
 }));
 
-if(trustProxy){
+if (trustProxy) {
   app.enable('trust proxy');
 }
 
