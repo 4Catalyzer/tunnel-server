@@ -1,6 +1,6 @@
 {
   "name": "tunnel-server",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "scripts": {
     "clean": "rm -rf bin/server",
     "start-dev": "node index.js",
