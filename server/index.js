@@ -13,6 +13,7 @@ const serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
 const wsToken = process.env.TS_AUTH_TOKEN;
 const authenticateApi =
   (process.env.TS_AUTHENTICATE_API || '').toLowerCase() === 'true';
+const trustProxy = (process.env.TS_TRUST_PROXY || '').toLowerCase() === 'true';
 
 assert(wsToken, 'specify a websocket token');
 
@@ -29,6 +30,10 @@ app.use(cors({
 app.use(bodyParser.json({
   limit: '100kb',
 }));
+
+if(trustProxy){
+  app.enable('trust proxy');
+}
 
 app.use(morgan('combined'));
 
