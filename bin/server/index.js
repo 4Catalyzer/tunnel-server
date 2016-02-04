@@ -43,6 +43,7 @@ var _middleware2 = _interopRequireDefault(_middleware);
 var serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
 var wsToken = process.env.TS_AUTH_TOKEN;
 var authenticateApi = (process.env.TS_AUTHENTICATE_API || '').toLowerCase() === 'true';
+var trustProxy = (process.env.TS_TRUST_PROXY || '').toLowerCase() === 'true';
 
 (0, _assert2['default'])(wsToken, 'specify a websocket token');
 
@@ -59,6 +60,10 @@ app.use((0, _cors2['default'])({
 app.use(_bodyParser2['default'].json({
   limit: '100kb'
 }));
+
+if (trustProxy) {
+  app.enable('trust proxy');
+}
 
 app.use((0, _morgan2['default'])('combined'));
 
