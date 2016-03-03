@@ -14,8 +14,13 @@ export function getNetwork(networkId) {
 }
 
 export function unregisterNetwork(networkId) {
-  warn(`unregistering network ${networkId}`);
-  networkRegistry[networkId].unregister();
+  log(`unregistering network ${networkId}`);
+  const network = networkRegistry[networkId];
+  if (!network) {
+    warn(`network ${networkId} not found`);
+    return;
+  }
+  network.unregister();
   networkRegistry[networkId] = undefined;
 }
 
