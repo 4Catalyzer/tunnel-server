@@ -12,6 +12,7 @@ const POLICY_VIOLATION_CODE = 1008;
 function _handleConnection(websocket, authenticate, cb) {
   websocket.on('connection', ws => {
     if (!authenticate(ws.upgradeReq.headers)) {
+      log('authentication failed');
       ws.close(POLICY_VIOLATION_CODE, 'authentication failed');
     } else {
       cb(ws);

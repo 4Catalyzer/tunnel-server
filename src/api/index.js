@@ -1,3 +1,4 @@
+import { log } from '../lib/log';
 import { Router } from 'express';
 import tunnel from './tunnel';
 
@@ -9,6 +10,7 @@ export default function (authenticate) {
       if (!authenticate || authenticate(req.headers)) {
         next();
       } else {
+        log('authentication failed, invalid token');
         res.status(401).send('invalid token');
       }
     },
