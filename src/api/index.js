@@ -7,23 +7,25 @@ import tunnel from './tunnel';
 export default function (authenticate) {
   const api = new Router();
 
-  api.get('/networks', (req, res) => res.json(getNetworks()));
-
-  api.use('/networks/:networkId/tunnel',
-    (req, res, next) => {
-      if (!authenticate || authenticate(req.headers)) {
-        next();
-      } else {
-        log('authentication failed, invalid token');
-        res.status(401).send('invalid token');
-      }
-    },
+  const networks = new Router();
+  networks.use((req, res, next) => {
+    if (!authenticate || authenticate(req.headers)) {
+      next();
+    } else {
+      log('authentication failed, invalid token');
+      res.status(401).send('invalid token');
+    }
+  });
+  networks.get('/', (req, res) => res.json(getNetworks()));
+  networks.use('/:networkId/tunnel',
     (req, res, next) => {
       req.networkId = req.params.networkId;
       next();
     },
-    tunnel());
+    tunnel()
+  );
 
+  api.use('/networks', networks);
   api.get('/_tunnel',
     (req, res) => res.json({
       api_version: '1.0',
