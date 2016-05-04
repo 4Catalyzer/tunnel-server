@@ -1,9 +1,17 @@
-import Network from './network';
 import { log, warn } from './log';
+import Network from './network';
 
 
 const networkRegistry = {};
 const MONITOR_TIMEOUT = 5000;
+
+/**
+ * get the list of currently open networks
+ * @return {[type]} [description]
+ */
+export function getNetworks() {
+  return Object.keys(networkRegistry);
+}
 
 /**
  * get the network specified by `networkId`
@@ -21,7 +29,7 @@ export function unregisterNetwork(networkId) {
     return;
   }
   network.unregister();
-  networkRegistry[networkId] = undefined;
+  delete networkRegistry[networkId];
 }
 
 /**

@@ -9,7 +9,7 @@ import { log } from './lib/log';
 import registerWebsockets from './register-websockets';
 import middleware from './middleware';
 
-function run() {
+export function run() {
   const serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
   const wsToken = process.env.TS_AUTH_TOKEN;
   const authenticateApi =
@@ -46,7 +46,3 @@ function run() {
   log(`Server started on port ${server.address().port}`);
   return app;
 }
-
-export default {
-  run,
-};
