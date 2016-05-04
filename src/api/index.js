@@ -1,9 +1,13 @@
-import { log } from '../lib/log';
 import { Router } from 'express';
+
+import { log } from '../lib/log';
+import { getNetworks } from '../lib/network-registry';
 import tunnel from './tunnel';
 
 export default function (authenticate) {
   const api = new Router();
+
+  api.get('/networks', (req, res) => res.json(getNetworks()));
 
   api.use('/networks/:networkId/tunnel',
     (req, res, next) => {
