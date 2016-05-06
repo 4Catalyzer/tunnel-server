@@ -46,6 +46,9 @@ export default class WsStream extends Duplex {
 
   end() {
     super.end();
+    // send an empty buffer to signify the end of the connection
+    const emptyBuffer = new Buffer(0);
+    this._write(emptyBuffer);
     this.wsConn.removeListener('message', this._onMessage);
     this.wsConn.removeListener('error', this._onError);
     this.wsConn.removeListener('close', this._onClose);
