@@ -10,6 +10,7 @@ import registerWebsockets from './register-websockets';
 import middleware from './middleware';
 
 export function run() {
+  const apiPath = process.env.TS_API_PATH || '/api';
   const serverPort = Number(process.env.TS_SERVER_PORT) || 8080;
   const wsToken = process.env.TS_AUTH_TOKEN;
   const authenticateApi =
@@ -37,7 +38,7 @@ export function run() {
   app.use(middleware());
 
   // api router
-  app.use('/api', api(authenticateApi && authenticate));
+  app.use(apiPath, api(authenticateApi && authenticate));
 
   const server = app.listen(serverPort);
 
